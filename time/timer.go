@@ -1,7 +1,7 @@
 package time
 
 import (
-	"github.com/gly-hub/go-dandelion/logger"
+	"fmt"
 	"sync"
 	itime "time"
 )
@@ -44,7 +44,6 @@ type Timer struct {
 // can be used. Init is idempotent with respect to the heap invariants
 // and may be called whenever the heap invariants may have been invalidated.
 // Its complexity is O(n) where n = h.Len().
-//
 func NewTimer(num int) (t *Timer) {
 	t = new(Timer)
 	t.init(num)
@@ -130,11 +129,11 @@ func (t *Timer) add(td *TimerData) {
 		d = td.Delay()
 		t.signal.Reset(d)
 		if Debug {
-			logger.Info("timer: add reset delay %d ms", int64(d)/int64(itime.Millisecond))
+			fmt.Println(fmt.Sprintf("timer: add reset delay %d ms", int64(d)/int64(itime.Millisecond)))
 		}
 	}
 	if Debug {
-		logger.Info("timer: push item key: %s, expire: %s, index: %d", td.Key, td.ExpireString(), td.index)
+		fmt.Println(fmt.Sprintf("timer: push item key: %s, expire: %s, index: %d", td.Key, td.ExpireString(), td.index))
 	}
 }
 
@@ -146,7 +145,7 @@ func (t *Timer) del(td *TimerData) {
 	if i < 0 || i > last || t.timers[i] != td {
 		// already remove, usually by expire
 		if Debug {
-			logger.Info("timer del i: %d, last: %d, %p", i, last, td)
+			fmt.Println(fmt.Sprintf("timer del i: %d, last: %d, %p", i, last, td))
 		}
 		return
 	}
@@ -159,7 +158,7 @@ func (t *Timer) del(td *TimerData) {
 	t.timers[last].index = -1 // for safety
 	t.timers = t.timers[:last]
 	if Debug {
-		logger.Info("timer: remove item key: %s, expire: %s, index: %d", td.Key, td.ExpireString(), td.index)
+		fmt.Println(fmt.Sprintf("timer: remove item key: %s, expire: %s, index: %d", td.Key, td.ExpireString(), td.index))
 	}
 }
 
@@ -194,7 +193,7 @@ func (t *Timer) expire() {
 		if len(t.timers) == 0 {
 			d = infiniteDuration
 			if Debug {
-				logger.Info("timer: no other instance")
+				fmt.Println(fmt.Sprintf("timer: no other instance"))
 			}
 			break
 		}
@@ -207,10 +206,10 @@ func (t *Timer) expire() {
 		t.del(td)
 		t.lock.Unlock()
 		if fn == nil {
-			logger.Warning("expire timer no fn")
+			fmt.Println(fmt.Sprintf("expire timer no fn"))
 		} else {
 			if Debug {
-				logger.Info("timer key: %s, expire: %s, index: %d expired, call fn", td.Key, td.ExpireString(), td.index)
+				fmt.Println(fmt.Sprintf("timer key: %s, expire: %s, index: %d expired, call fn", td.Key, td.ExpireString(), td.index))
 			}
 			fn()
 		}
@@ -218,7 +217,7 @@ func (t *Timer) expire() {
 	}
 	t.signal.Reset(d)
 	if Debug {
-		logger.Info("timer: expier reset delay %d ms", int64(d)/int64(itime.Millisecond))
+		fmt.Println(fmt.Sprintf("timer: expier reset delay %d ms", int64(d)/int64(itime.Millisecond)))
 	}
 	t.lock.Unlock()
 }
