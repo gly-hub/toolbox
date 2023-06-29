@@ -5,11 +5,11 @@ import "os"
 // CheckDirExist 校验文件夹是否存在
 func CheckDirExist(path string) (bool, error) {
 	fileInfo, err := os.Stat(path)
-	if err != nil {
+	if err != nil && os.IsNotExist(err) {
 		return false, err
 	}
 
-	if os.IsExist(err) && fileInfo.IsDir() {
+	if fileInfo.IsDir() {
 		return true, nil
 	}
 

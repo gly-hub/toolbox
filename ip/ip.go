@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-// 获取外网ip地址
+// GetLocation 获取外网ip地址
 func GetLocation(ip string) string {
 	if ip == "127.0.0.1" || ip == "localhost" {
 		return "内部IP"
@@ -34,7 +34,7 @@ func GetLocation(ip string) string {
 	return m["province"] + "-" + m["city"]
 }
 
-// 获取局域网ip地址
+// GetLocalHost 获取局域网ip地址
 func GetLocalHost() string {
 	netInterfaces, err := net.Interfaces()
 	if err != nil {
