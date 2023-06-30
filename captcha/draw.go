@@ -1,9 +1,13 @@
 package captcha
 
 import (
+	"bytes"
+	"encoding/base64"
 	"image"
 	"image/color"
 	"image/draw"
+	"image/png"
+	"io"
 	"math"
 
 	"github.com/golang/freetype"
@@ -140,6 +144,16 @@ func (img *Image) distortTo(amplude float64, period float64) {
 			}
 		}
 	}
+}
+
+func (img *Image) Encode(w io.Writer) error {
+	return png.Encode(w, img)
+}
+
+func (img *Image) Base64() string {
+	var buf bytes.Buffer
+	img.Encode(&buf)
+	return base64.StdEncoding.EncodeToString(buf.Bytes())
 }
 
 func inBounds(b image.Rectangle, x, y float64) bool {
