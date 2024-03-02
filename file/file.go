@@ -1,7 +1,6 @@
 package file
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -14,7 +13,6 @@ func GetPwd() (string, error) {
 func CheckFileIsExist(path string) (bool, error) {
 	fileInfo, err := os.Stat(path)
 	if err != nil && os.IsNotExist(err) {
-		fmt.Println(err.Error())
 		return false, err
 	}
 
